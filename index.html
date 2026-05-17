@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>nesflix-web</title>
+<meta name="description" content="Convert an animated GIF into a playable NES ROM. In-browser port of NESFlix (2011) by NO CARRIER and Batsly Adams.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="terminal">
+
+  <header>
+    <h1>nesflix-web</h1>
+    <p class="sub">
+      animated gif &rarr; playable .nes rom, in the browser.
+      a port of <a href="https://github.com/no-carrier/NESFlix" target="_blank" rel="noopener">NESFlix</a>
+      by NO CARRIER and Batsly Adams.
+    </p>
+  </header>
+
+  <section class="panel">
+    <h2>input requirements</h2>
+    <ul class="spec">
+      <li>animated GIF, exactly <strong>128 &times; 128 px</strong></li>
+      <li>up to <strong>64 frames</strong> (MMC3 mapper limit)</li>
+      <li>exactly <strong>4 colors</strong>, paletted</li>
+      <li>see <a href="https://youtu.be/4-w5C875O34" target="_blank" rel="noopener">Levi's Digital Voyage tutorial</a> for GIF prep instructions using EZGIF.com</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>convert</h2>
+    <label class="file">
+      <input type="file" id="gifInput" accept=".gif,image/gif">
+      <span id="filename">choose a 128&times;128 GIF</span>
+    </label>
+
+    <label class="opt">
+      <input type="checkbox" id="deleteFirstTile">
+      <span>delete first tile
+        <em>(zero out top-left 8&times;8 of every frame so the engine's border modes show a solid fill)</em>
+      </span>
+    </label>
+
+    <button id="convertBtn" disabled>convert</button>
+  </section>
+
+  <section id="status" class="panel hidden">
+    <h2>result</h2>
+    <dl id="stats"></dl>
+    <p id="message"></p>
+    <p id="download"></p>
+  </section>
+
+  <footer>
+    <p>
+      <a href="https://github.com/k6lcm/nesflix-web" target="_blank" rel="noopener">source</a> &nbsp;|&nbsp;
+      GPL v3
+    </p>
+    <p class="small">
+      original NESFlix by <a href="https://no-carrier.com" target="_blank" rel="noopener">NO CARRIER</a> (2011).
+      original NESFlixTool by Batsly Adams.
+      web port by <a href="https://www.youtube.com/@levimaaia" target="_blank" rel="noopener">Levi&nbsp;C.&nbsp;Maaia</a>.
+    </p>
+  </footer>
+
+</main>
+
+<script src="vendor/gifuct.js"></script>
+<script src="converter.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

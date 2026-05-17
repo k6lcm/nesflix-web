@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>nesflix-web · fidelity test</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<main class="terminal">
+  <header>
+    <h1>fidelity test</h1>
+    <p class="sub">Run the in-browser converter on the original
+    <code>adorn.gif</code> and compare the resulting CHR against NO CARRIER's
+    distributed <code>mmc3.chr</code> byte for byte.</p>
+    <p class="sub">A pass means the JavaScript port and the 2011 Java tool
+    produce bit-identical output on the same input.</p>
+  </header>
+
+  <section id="results" class="panel">
+    <p>loading...</p>
+  </section>
+
+  <p><a href="../index.html">&larr; back to converter</a></p>
+</main>
+
+<script src="../vendor/gifuct.js"></script>
+<script src="../converter.js"></script>
+<script>
+'use strict';
+
+const KNOWN_GOOD_CHR_SHA256 =
+  'c698380daa7a7677c55c75542ef60ca2e42276337486c7c9967b770880b320e0';
+
+async function sha256Hex(bytes) {
+  const buf = await crypto.subtle.digest('SHA-256', bytes);
+  return Array.from(new Uint8Array(buf))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function row(label, value, ok) {
+  const className = ok === undefined ? '' : (ok ? 'ok' : 'fail');
+  return `<dt>${label}</dt><dd class="${className}">${value}</dd>`;
+}
+
+async function run() {
+  const out = document.getElementById('results');
+  out.innerHTML = '<p>fetching adorn.gif and reference CHR...</p>';
+
+  const [gifResp, refResp] = await Promise.all([
+    fetch('../assets/adorn.gif'),
+    fetch('adorn_reference.chr'),
+  ]);
+  if (!gifResp.ok || !refResp.ok) {
+    out.innerHTML = `<p class="fail">FAIL: could not fetch test assets.
+      adorn.gif=${gifResp.status}, adorn_reference.chr=${refResp.status}.
+      Open this page through a local web server (file:// won't work).</p>`;
+    return;
+  }
+  const gifBuf = await gifResp.arrayBuffer();
+  const refBuf = await refResp.arrayBuffer();
+  const refSha = await sha256Hex(refBuf);
+
+  out.innerHTML = '<p>converting...</p>';
+  const t0 = performance.now();
+  const result = window.NESFlix.convertGifToChr(gifBuf);
+  const elapsed = (performance.now() - t0).toFixed(1);
+
+  const mineSha = await sha256Hex(result.chr.buffer);
+  const matches = mineSha === refSha;
+  const refMatchesGold = refSha === KNOWN_GOOD_CHR_SHA256;
+
+  const items = [
+    row('frames decoded',  result.frameCount + ' / ' + window.NESFlix.MAX_FRAMES,
+        result.frameCount === 64),
+    row('colors in frame 0', result.colorCount, result.colorCount <= 4),
+    row('CHR bytes produced', result.chr.length, result.chr.length === 262144),
+    row('reference CHR sha-256', refSha, refMatchesGold),
+    row('our CHR sha-256', mineSha, matches),
+    row('elapsed', elapsed + ' ms'),
+  ];
+
+  const verdict = matches
+    ? '<p class="ok big">PASS - byte-identical to NO CARRIER\'s mmc3.chr.</p>'
+    : '<p class="fail big">FAIL - output differs from reference. Do NOT release.</p>';
+
+  out.innerHTML = `<dl>${items.join('')}</dl>${verdict}`;
+}
+
+run().catch(err => {
+  document.getElementById('results').innerHTML =
+    `<p class="fail">ERROR: ${err.message}</p><pre>${err.stack || ''}</pre>`;
+});
+</script>
+</body>
+</html>
