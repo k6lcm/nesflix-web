@@ -23,9 +23,9 @@ entirely in a browser.
 
 ## Usage
 
-1. Prep your GIF following [Batsly Adams' Photoshop original
+1. Prep your GIF following Batsly Adams' [original Photoshop
    tutorial](https://github.com/no-carrier/NESFlix/blob/master/NESFlixTool/NESFlixTool_readme/NESFlixTool_readme.html)
-   or [Levi's Ezgif.com video tutorial](https://youtu.be/4-w5C875O34) (just come back
+   or Levi's Digital Voyage [video tutorial using Ezgif.com](https://youtu.be/4-w5C875O34) (just come back
    here before venturing off into the original NESFlix Java app): loop trim,
    resize to 128×128, reduce to 4 colors, uncheck transparency, save as GIF.
    The file must end up exactly 128×128 with no more than 64 frames and
