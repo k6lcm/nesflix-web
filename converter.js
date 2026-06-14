@@ -18,6 +18,7 @@ const FRAME_BYTES   = 4096;          // one CHR page = 256 tiles * 16 bytes
 const MAX_FRAMES    = 64;            // MMC3 max; engine has fcount hardcoded
 const CHR_BYTES     = FRAME_BYTES * MAX_FRAMES;   // 262144 = 256 KiB
 const TEMPLATE_BYTES = 32784;        // 16-byte iNES header + 32 KiB PRG
+const NES_HEADER_BYTES = 16;         // iNES header prepended to PRG
 const NES_BYTES     = TEMPLATE_BYTES + CHR_BYTES; // 294928
 
 const WIDTH  = 128;
@@ -281,6 +282,6 @@ window.NESFlix = {
   convertGifToChr,
   buildNesRom,
   // exported constants for the UI / test page
-  FRAME_BYTES, MAX_FRAMES, CHR_BYTES, TEMPLATE_BYTES, NES_BYTES,
+  FRAME_BYTES, MAX_FRAMES, CHR_BYTES, TEMPLATE_BYTES, NES_BYTES, NES_HEADER_BYTES,
   WIDTH, HEIGHT,
 };

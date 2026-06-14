@@ -59,20 +59,48 @@ $('convertBtn').addEventListener('click', async () => {
     const nes = window.NESFlix.buildNesRom(templateBytes, result.chr.buffer);
     setMessage('done.', 'ok');
 
-    const blob = new Blob([nes], { type: 'application/octet-stream' });
-    const url  = URL.createObjectURL(blob);
     const stem = pendingFileName.replace(/\.gif$/i, '');
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${stem}.nes`;
-    a.textContent = `download ${stem}.nes (${nes.length.toLocaleString()} bytes)`;
-    a.className = 'download-link';
+
+    // PRG: template.bin is a 16-byte iNES header + 32 KiB PRG.
+    // Strip the header so the file matches what goes on a PRG EPROM.
+    const prg = new Uint8Array(templateBytes).subarray(
+      window.NESFlix.NES_HEADER_BYTES
+    );
+
+    const nesLink = makeDownloadLink(
+      nes, `${stem}.nes`,
+      `download ${stem}.nes (${nes.length.toLocaleString()} bytes)`
+    );
+    const prgLink = makeDownloadLink(
+      prg, `${stem}.prg.bin`,
+      `download PRG.bin (${prg.length.toLocaleString()} bytes)`
+    );
+    const chrLink = makeDownloadLink(
+      result.chr, `${stem}.chr.bin`,
+      `download CHR.bin (${result.chr.length.toLocaleString()} bytes)`
+    );
+
     $('download').innerHTML = '';
-    $('download').appendChild(a);
+    $('download').appendChild(nesLink);
+    $('download-raw').innerHTML = '';
+    $('download-raw').appendChild(prgLink);
+    $('download-raw').appendChild(document.createTextNode('\u00A0'));
+    $('download-raw').appendChild(chrLink);
   } catch (err) {
     setMessage(err.message, 'fail');
   }
 });
+
+function makeDownloadLink(bytes, filename, label) {
+  const blob = new Blob([bytes], { type: 'application/octet-stream' });
+  const url  = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.textContent = label;
+  a.className = 'download-link';
+  return a;
+}
 
 function showStatus() { $('status').classList.remove('hidden'); }
 function hideStatus() { $('status').classList.add('hidden'); }
