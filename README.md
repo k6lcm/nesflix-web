@@ -47,6 +47,10 @@ In scope:
 - MMC3 path, up to 64 frames
 - Optional "delete first tile" behavior, identical to the original
 - The same validation errors the original tool reports
+- Separate PRG.bin and CHR.bin files availavble for
+burning physical EPROMs. The PRG download has the 16-byte iNES header stripped.
+Note: I have not yet burned these to a physical EPROM and booted on
+hardware. If you try it on a real cart, let me know how it goes.
 
 Out of scope (for now):
 
